@@ -196,6 +196,8 @@ def test_HAreaStep() -> None:
     assert glyph.x2 == field("x2")
     assert glyph.y == field("y")
     assert glyph.step_mode == "before"
+    assert glyph.pad_before == 0
+    assert glyph.pad_after == 0
     check_fill_properties(glyph)
     check_hatch_properties(glyph)
     check_properties_existence(glyph, [
@@ -203,7 +205,14 @@ def test_HAreaStep() -> None:
         "x2",
         "y",
         "step_mode",
+        "pad_before",
+        "pad_after",
     ], FILL, HATCH, GLYPH)
+
+    glyph.pad_before = 0.25
+    glyph.pad_after = 0.5
+    assert glyph.pad_before == 0.25
+    assert glyph.pad_after == 0.5
 
 
 def test_HBar() -> None:
@@ -626,6 +635,8 @@ def test_VAreaStep() -> None:
     assert glyph.y1 == field("y1")
     assert glyph.y2 == field("y2")
     assert glyph.step_mode == "before"
+    assert glyph.pad_before == 0
+    assert glyph.pad_after == 0
     check_fill_properties(glyph)
     check_hatch_properties(glyph)
     check_properties_existence(glyph, [
@@ -633,7 +644,14 @@ def test_VAreaStep() -> None:
         "y1",
         "y2",
         "step_mode",
+        "pad_before",
+        "pad_after",
     ], FILL, HATCH, GLYPH)
+
+    glyph.pad_before = 0.25
+    glyph.pad_after = 0.5
+    assert glyph.pad_before == 0.25
+    assert glyph.pad_after == 0.5
 
 
 def test_VBar() -> None:
