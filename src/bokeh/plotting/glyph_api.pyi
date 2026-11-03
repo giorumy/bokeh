@@ -271,6 +271,8 @@ class HAreaStepArgs(GlyphArgs, FillVisuals, HatchVisuals, total=False):
     # x2: NumberArg
     # y: NumberArg
     step_mode: StepMode
+    pad_before: float
+    pad_after: float
 
 class HBarArgs(GlyphArgs, LineVisuals, FillVisuals, HatchVisuals, total=False):
     # y: NumberArg
@@ -464,6 +466,8 @@ class VAreaStepArgs(GlyphArgs, FillVisuals, HatchVisuals, total=False):
     # y1: NumberArg
     # y2: NumberArg
     step_mode: StepMode
+    pad_before: float
+    pad_after: float
 
 class VBarArgs(GlyphArgs, LineVisuals, FillVisuals, HatchVisuals, total=False):
     # x: NumberArg

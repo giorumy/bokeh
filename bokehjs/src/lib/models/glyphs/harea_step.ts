@@ -1,5 +1,5 @@
 import type {PointGeometry} from "core/geometry"
-import type {Arrayable} from "core/types"
+import type {Arrayable, Rect} from "core/types"
 import {Area, AreaView} from "./area"
 import type {Context2d} from "core/util/canvas"
 import type {SpatialIndex} from "core/util/spatial"
@@ -14,6 +14,20 @@ export interface HAreaStepView extends HAreaStep.Data {}
 export class HAreaStepView extends AreaView {
   declare model: HAreaStep
   declare visuals: HAreaStep.Visuals
+
+  protected override _bounds(bounds: Rect): Rect {
+    const {pad_before, pad_after} = this.model
+    const first = 0
+    const last = this.data_size - 1
+    const pad_first = isFinite(this.x1[first] + this.x2[first] + this.y[first])
+    const pad_last = isFinite(this.x1[last] + this.x2[last] + this.y[last])
+    return {
+      x0: bounds.x0,
+      x1: bounds.x1,
+      y0: bounds.y0 - (pad_first ? pad_before : 0),
+      y1: bounds.y1 + (pad_last ? pad_after : 0),
+    }
+  }
 
   protected _index_data(index: SpatialIndex): void {
     const {min, max} = Math
@@ -62,12 +76,37 @@ export class HAreaStepView extends AreaView {
 
     const forward_mode = this.model.step_mode
     const backward_mode = flip_step_mode(this.model.step_mode)
+    const {pad_before, pad_after} = this.model
+    const last = sy.length - 1
+    const has_before = pad_before != 0 && isFinite(this.x1[0] + this.x2[0] + this.y[0])
+    const has_after = pad_after != 0 && isFinite(this.x1[last] + this.x2[last] + this.y[last])
 
     ctx.beginPath()
-    ctx.moveTo(sx1[0], sy[0])
+    if (has_before) {
+      const pad_sy = this.renderer.yscale.s_compute(this.y[0] - pad_before)
+      ctx.moveTo(sx1[0], pad_sy)
+      ctx.lineTo(sx1[0], sy[0])
+    } else {
+      ctx.moveTo(sx1[0], sy[0])
+    }
 
     this._step_path(ctx, forward_mode, sx1, sy, 0, sy.length)
+    if (has_after) {
+      const pad_sy = this.renderer.yscale.s_compute(this.y[last] + pad_after)
+      ctx.lineTo(sx1[last], pad_sy)
+      ctx.lineTo(sx2[last], pad_sy)
+      ctx.lineTo(sx2[last], sy[last])
+    } else {
+      ctx.lineTo(sx2[last], sy[last])
+    }
     this._step_path(ctx, backward_mode, sx2, sy, sy.length, -1)
+    if (has_before) {
+      const pad_sy = this.renderer.yscale.s_compute(this.y[0] - pad_before)
+      ctx.lineTo(sx2[0], pad_sy)
+      ctx.lineTo(sx1[0], pad_sy)
+    } else {
+      ctx.lineTo(sx1[0], sy[0])
+    }
 
     ctx.closePath()
 
@@ -151,6 +190,8 @@ export namespace HAreaStep {
     x2: p.XCoordinateSpec
     y: p.YCoordinateSpec
     step_mode: p.Property<StepMode>
+    pad_before: p.Property<number>
+    pad_after: p.Property<number>
   }
 
   export type Visuals = Area.Visuals
@@ -172,6 +213,10 @@ export class HAreaStep extends Area {
       x2:        [ p.XCoordinateSpec, {field: "x2"} ],
       y:         [ p.YCoordinateSpec, {field: "y"} ],
       step_mode: [ StepMode, "before" ],
+    }))
+    this.define<HAreaStep.Props>(({Float, NonNegative}) => ({
+      pad_before: [ NonNegative(Float), 0 ],
+      pad_after: [ NonNegative(Float), 0 ],
     }))
   }
 }

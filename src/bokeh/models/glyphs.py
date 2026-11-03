@@ -617,6 +617,14 @@ class HAreaStep(Glyph, FillGlyph, HatchGlyph):
     * ``center``: Draw step levels centered on each y-coordinate
     """)
 
+    pad_before = NonNegative(Float, default=0, help="""
+    Extends the area before the first y-coordinate by this amount.
+    """)
+
+    pad_after = NonNegative(Float, default=0, help="""
+    Extends the area after the last y-coordinate by this amount.
+    """)
+
     fill_props = Include(ScalarFillProps, help="""
     The {prop} values for the horizontal directed area.
     """)
@@ -1780,6 +1788,14 @@ class VAreaStep(Glyph, FillGlyph, HatchGlyph):
     * ``before``: (default) Draw step levels before each x-coordinate (no step before the first point)
     * ``after``:  Draw step levels after each x-coordinate (no step after the last point)
     * ``center``: Draw step levels centered on each x-coordinate
+    """)
+
+    pad_before = NonNegative(Float, default=0, help="""
+    Extends the area before the first x-coordinate by this amount.
+    """)
+
+    pad_after = NonNegative(Float, default=0, help="""
+    Extends the area after the last x-coordinate by this amount.
     """)
 
     fill_props = Include(ScalarFillProps, help="""
